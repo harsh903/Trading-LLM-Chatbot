@@ -1,0 +1,26 @@
+# Core dependencies
+streamlit==1.31.0
+pandas==2.1.4
+numpy==1.24.3
+
+# Data fetching and processing
+yfinance==0.2.36
+requests==2.31.0
+python-dotenv==1.0.1
+
+# Technical Analysis
+ta==0.10.2
+scipy==1.11.3
+
+# Visualization
+plotly==5.18.0
+
+# AI and Language Models
+langchain==0.1.4
+langchain-openai==0.0.5
+
+# Date handling
+python-dateutil==2.8.2
+
+# Optional: for improved performance
+numba==0.58.1
