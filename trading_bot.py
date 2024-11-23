@@ -51,6 +51,15 @@ class TechnicalIndicators:
 
 class FinanceDataManager:
     @staticmethod
+    def get_stock_info(ticker):
+        """
+        This Function is created by soumanjyotiofficial
+        Purpose of this function is to extract About company info
+        and send to agent who will summerise the info of the company
+        and Show out put in the dashboard.
+        """
+        return yf.Ticker("TCS.NS").info['longBusinessSummary']
+    @staticmethod
     def get_stock_data(ticker: str) -> dict:
         try:
             stock = yf.Ticker(ticker)
