@@ -11,6 +11,7 @@ setup(
         "yfinance>=0.2.36",
         "python-dotenv>=1.0.0",
         "plotly>=5.18.0",
+        "ta>=0.10.2",
         "langgraph>=0.0.3",
         "langchain>=0.1.0",
         "langchain-openai>=0.0.2",
