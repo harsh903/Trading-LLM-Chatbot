@@ -53,10 +53,3 @@ The Advanced Trading Analysis Dashboard combines real-time market data with AI-p
   <img src="assets/screenshots/signals-view.png" alt="Trading Signals" width="100%">
   <p><i>LLM-generated trading signals and recommendations</i></p>
 </div>
-
-## Quick Start
-
-1. **Clone the repository**
-```bash
-git clone https://github.com/yourusername/trading-analysis-dashboard.git
-cd trading-analysis-dashboard
