@@ -14,6 +14,8 @@ setup(
         "langchain>=0.1.0",
         "langchain-openai>=0.0.2",
         "requests>=2.31.0",
+        "python-dateutil>=2.8.2",
+        "pytz>=2024.1",
     ],
-    python_requires=">=3.9",
+    python_requires=">=3.12",
 )
