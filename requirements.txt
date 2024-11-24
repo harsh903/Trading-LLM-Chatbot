@@ -28,3 +28,4 @@ numba==0.58.1
 plotly>=5.18.0
 setuptools>=65.5.1
 wheel>=0.38.4
+python-dotenv>=1.0.1
