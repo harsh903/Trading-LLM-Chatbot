@@ -11,7 +11,7 @@ The Advanced Trading Analysis Dashboard combines real-time market data with AI-p
 
 ## System Architecture
 <div align="center">
-  <img src="images\architecture.png" alt="System Architecture" width="100%">
+  <img src="images/architecture.png" alt="System Architecture" width="100%">
   <p><i>System architecture showing integration of SambaNova AI with market data analysis</i></p>
 </div>
 
@@ -26,30 +26,25 @@ The Advanced Trading Analysis Dashboard combines real-time market data with AI-p
 
 ### Dashboard Overview
 <div align="center">
-  <img src="assets/screenshots/dashboard-main.png" alt="Main Dashboard" width="100%">
+  <img src="images/dashboard.gif" alt="Main Dashboard" width="100%">
   <p><i>Real-time market overview with key metrics and AI insights</i></p>
 </div>
 
 ### Technical Analysis
 <div align="center">
-  <img src="assets/screenshots/technical-view.png" alt="Technical Analysis" width="100%">
+  <img src="images/Technical Analysis.gif" alt="Technical Analysis" width="100%">
   <p><i>Advanced technical analysis with multiple indicators</i></p>
 </div>
 
 ### News & Sentiment Analysis
 <div align="center">
-  <img src="assets/screenshots/sentiment-view.png" alt="Sentiment Analysis" width="100%">
+  <img src="images/Technical Analysis.gif" alt="Sentiment Analysis" width="100%">
   <p><i>AI-powered news analysis and market sentiment</i></p>
 </div>
 
 ### Risk Dashboard
 <div align="center">
-  <img src="assets/screenshots/risk-view.png" alt="Risk Analysis" width="100%">
+  <img src="images/Risk.gif" alt="Risk Analysis" width="100%">
   <p><i>Comprehensive risk monitoring and assessment</i></p>
 </div>
 
-### AI Trading Signals
-<div align="center">
-  <img src="assets/screenshots/signals-view.png" alt="Trading Signals" width="100%">
-  <p><i>LLM-generated trading signals and recommendations</i></p>
-</div>
