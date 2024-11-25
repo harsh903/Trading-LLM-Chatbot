@@ -5,11 +5,9 @@ numpy>=1.26.0,<2.0.0
 yfinance>=0.2.36
 python-dotenv>=1.0.0
 
-# Data Analysis
+# Data Analysis and Visualization
 plotly>=5.18.0
-TA-Lib>=0.4.28
-scikit-learn>=1.4.0
-statsmodels>=0.14.1
+ta>=0.10.2
 
 # LangChain and related
 langgraph>=0.0.3
@@ -20,3 +18,7 @@ langchain-openai>=0.0.2
 requests>=2.31.0
 python-dateutil>=2.8.2
 pytz>=2024.1
+
+# Build dependencies
+setuptools>=69.0.3
+wheel>=0.42.0
