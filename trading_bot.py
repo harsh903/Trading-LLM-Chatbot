@@ -1,4 +1,5 @@
 import yfinance as yf
+import requests as req
 import pandas as pd
 from datetime import datetime, timedelta
 from typing import Dict, Any, List, Optional, Tuple
@@ -6,7 +7,42 @@ from enum import Enum
 from langchain_openai import ChatOpenAI
 import numpy as np
 import json
+
 import ta
+from bs4 import BeautifulSoup 
+
+class FundamentalAnalysis:
+    def __init__(self, ticker):
+        self.ticker  = ticker
+        self.search_url = f"https://www.screener.in/company/{ticker.replace('.NS','')}/consolidated/"
+        self.response = req.get(self.search_url).content
+        
+    def get_ratios(self):
+        soup = BeautifulSoup(self.response, "html.parser")
+        ratios = soup.select("div.company-ratios ul#top-ratios li")
+        data = []
+        for ratio in ratios:
+            name = ratio.find("span", class_="name").get_text(strip=True)
+            value_tag = ratio.find("span", class_="value")
+            if value_tag:
+                value = " ".join(value_tag.get_text(strip=True).split())  # Clean whitespace
+            else:
+                value = None
+            data.append((name, value))
+
+        # Convert the list of tuples into a DataFrame
+        df = pd.DataFrame(data, columns=["Metric", "Value"])
+        #df.index = df['Metric']
+        #df.drop(columns='Metric', inplace=True)
+
+        # Display the DataFrame
+        return df
+
+        
+
+        
+
+        
 
 class TradingBias(Enum):
     BULLISH = "bullish"
@@ -14,14 +50,21 @@ class TradingBias(Enum):
     NEUTRAL = "neutral"
 
 class TechnicalIndicators:
-    @staticmethod
-    def calculate_rsi(prices: pd.Series, period: int = 14) -> pd.Series:
+    
+    """def calculate_rsi(prices: pd.Series, period: int = 14) -> pd.Series:
         delta = prices.diff()
         gain = (delta.where(delta > 0, 0)).rolling(window=period).mean()
         loss = (-delta.where(delta < 0, 0)).rolling(window=period).mean()
         rs = gain / loss
         return 100 - (100 / (1 + rs))
+"""
 
+    @staticmethod
+    def calculate_rsi(prices: pd.Series, period: int = 14) -> pd.Series:
+        RSI_ = ta_.RSI(prices, 14)
+        return RSI_.iloc[-1]
+
+    """ 
     @staticmethod
     def calculate_macd(prices: pd.Series) -> Tuple[pd.Series, pd.Series, pd.Series]:
         exp1 = prices.ewm(span=12, adjust=False).mean()
@@ -29,6 +72,18 @@ class TechnicalIndicators:
         macd = exp1 - exp2
         signal = macd.ewm(span=9, adjust=False).mean()
         histogram = macd - signal
+        return macd, signal, histogram
+    """
+    @staticmethod
+    def calculate_macd(prices: pd.Series) -> Tuple[pd.Series, pd.Series, pd.Series]:
+        exp1 = prices.ewm(span=12, adjust=False).mean()
+        exp2 = prices.ewm(span=26, adjust=False).mean()
+        macd = exp1 - exp2
+        signal = macd.ewm(span=9, adjust=False).mean()
+        histogram = macd - signal
+
+        macd, signal, histogram = ta_.MACD(prices, fastperiod=12, slowperiod=26, signalperiod=9)
+
         return macd, signal, histogram
 
     @staticmethod
@@ -50,15 +105,6 @@ class TechnicalIndicators:
         return support, resistance
 
 class FinanceDataManager:
-    @staticmethod
-    def get_stock_info(ticker):
-        """
-        This Function is created by soumanjyotiofficial
-        Purpose of this function is to extract About company info
-        and send to agent who will summerise the info of the company
-        and Show out put in the dashboard.
-        """
-        return yf.Ticker("TCS.NS").info['longBusinessSummary']
     @staticmethod
     def get_stock_data(ticker: str) -> dict:
         try:
@@ -171,7 +217,96 @@ class FinanceDataManager:
         except Exception as e:
             print(f"Error in get_stock_news: {str(e)}")
             return []
+    
+    @staticmethod
+    def get_stock_info(ticker):
+        """
+        This Function is created by soumanjyotiofficial
+        Purpose of this function is to extract About company info
+        and send to agent who will summerise the info of the company
+        and Show out put in the dashboard.
+        """
+        return yf.Ticker(ticker).info['longBusinessSummary']
+    
+    @staticmethod
+    def get_stock_datatable(ticker):
+        """
+        This Function is created by soumanjyotiofficial
+        Purpose of this function is to extract stock data table with 
+        the following metrix:
+                :  Industry      :  values :
+                :  Sector        :  values :
+                :  52WeekLow     :  values :
+                :  50WeekHigh    :  values :
+                :  O/S Share     :  values :
+                :  Floating Share:  values :
+                :  Div. Yield    :  values :
+                :  5y Div. Yield :  values :
+                :  Beta          :  values :
 
+        """
+        stock = yf.Ticker(ticker=ticker).info
+        raw_data = {
+            "Industry":[stock['industry']],
+            "Sector":[stock['sector']],
+            "52WeekLow":[stock['fiftyTwoWeekLow']],
+            '50WeekHigh':[stock['fiftyTwoWeekHigh']],
+            "O/S Share":stock['sharesOutstanding'] ,
+            "Floating Share": [f'{stock['floatShares']}'],
+            "Div. Yield":[f"{stock['dividendYield']*100}%"],
+            "5y Div. Yield":[f'{stock['fiveYearAvgDividendYield']}%'], 
+            "Beta": [f'{stock['beta']}'],
+                    }
+                
+        return pd.DataFrame(raw_data).transpose().rename(columns={0:""})
+    
+    @staticmethod
+    def get_stock_financial_summery(ticker):
+        """
+        This Function is created by soumanjyotiofficial
+        Purpose of this function is to extract financial summery of last 4 years
+        the following metrix:
+        """
+        stock = yf.Ticker(ticker)
+        print(stock,"stock")
+        incomestatement = stock.get_income_stmt().transpose()
+
+        incomestatement = incomestatement[['TotalRevenue','GrossProfit','EBITDA','EBIT','PretaxIncome','NetIncome']]
+        incomestatement.rename(columns={'PretaxIncome':'EBT'}, inplace=True)
+        incomestatement = incomestatement / 100000000
+        incomestatement.index = pd.to_datetime(incomestatement.index)
+        incomestatement.sort_index(inplace=True)
+
+        incomestatement['YoY Rev. Growth'] = incomestatement['TotalRevenue'].pct_change()*100
+
+        incomestatement['YoY GP growth (%)'] = round(incomestatement['GrossProfit'].pct_change()*100,2)
+        incomestatement['GP Margin(%)'] = round(incomestatement['GrossProfit']/incomestatement['TotalRevenue']*100,2)
+
+        incomestatement['EBITDA Margin(%)'] = round(incomestatement['EBITDA']/incomestatement['TotalRevenue']*100,2)
+        incomestatement['YoY EBITDA growth (%)'] = round(incomestatement['EBITDA'].pct_change()*100,2)
+
+        incomestatement['EBIT Margin(%)'] = round(incomestatement['EBIT']/incomestatement['TotalRevenue']*100,2)
+        incomestatement['YoY EBIT growth (%)'] = round(incomestatement['EBIT'].pct_change()*100,2)
+
+        incomestatement['EBT Margin(%)'] = round(incomestatement['EBT']/incomestatement['TotalRevenue']*100,2)
+        incomestatement['YoY EBT growth (%)'] = round(incomestatement['EBIT'].pct_change()*100,2)
+
+        incomestatement['PAT Margin(%)'] = round(incomestatement['NetIncome']/incomestatement['TotalRevenue']*100,2)
+        incomestatement['YoY PAT growth (%)'] = round(incomestatement['NetIncome'].pct_change()*100,2)
+
+        incomestatement['YoY GP growth (%)'] = round(incomestatement['GrossProfit'].pct_change()*100,2)
+        incomestatement = incomestatement[['TotalRevenue','YoY Rev. Growth',
+                            'GrossProfit','YoY GP growth (%)','GP Margin(%)',
+                            'EBITDA','YoY EBITDA growth (%)','EBITDA Margin(%)',
+                            "EBIT",'YoY EBIT growth (%)','EBIT Margin(%)',
+                            "EBT",'YoY EBT growth (%)','EBT Margin(%)',
+                            "NetIncome",'YoY PAT growth (%)','PAT Margin(%)',
+                            ]]
+        incomestatement.index= pd.to_datetime(incomestatement.index).year
+        incomestatement = incomestatement.transpose()
+        
+        return incomestatement
+    
 class RiskDetectionManager:
     @staticmethod
     def analyze_geopolitical_risks(news_data: List[Dict[str, Any]], company_data: Dict[str, Any]) -> Dict[str, Any]:

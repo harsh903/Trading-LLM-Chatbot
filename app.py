@@ -31,6 +31,7 @@ if 'api_key' not in st.session_state:
 def create_candlestick_chart(ticker: str, period: str = "6mo") -> go.Figure:
     """Create an advanced candlestick chart with technical indicators"""
     stock = yf.Ticker(ticker)
+    print(stock)
     hist = stock.history(period=period)
     
     fig = make_subplots(rows=2, cols=1, shared_xaxes=True,
