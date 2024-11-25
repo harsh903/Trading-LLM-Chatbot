@@ -7,7 +7,7 @@ from enum import Enum
 from langchain_openai import ChatOpenAI
 import numpy as np
 import json
-import talib as ta_
+
 import ta
 from bs4 import BeautifulSoup 
 
