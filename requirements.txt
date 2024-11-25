@@ -19,6 +19,4 @@ requests>=2.31.0
 python-dateutil>=2.8.2
 pytz>=2024.1
 
-# Build dependencies
-setuptools>=69.0.3
-wheel>=0.42.0
+
